@@ -36,4 +36,12 @@ public class LockerService {
     public Locker getLockerById(Long lockerId) {
         return lockerRepository.findById(lockerId).orElse(null);
     }
+
+    public Locker createLocker(Locker locker) {
+        return lockerRepository.save(locker);
+    }
+
+    public List<Locker> getAllLockers() {
+        return lockerRepository.findAll();
+    }
 }

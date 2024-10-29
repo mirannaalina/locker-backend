@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
@@ -34,12 +35,12 @@ public class LockerController {
     }
 
     @PostMapping("/reserve/{lockerId}")
-    public ResponseEntity<?> reserveLocker(@PathVariable Long lockerId) {
+    public ResponseEntity<Locker> reserveLocker(@PathVariable Long lockerId) {
         try {
             Locker reservedLocker = lockerService.reserveLocker(lockerId);
             return ResponseEntity.ok(reservedLocker);
         } catch (ResponseStatusException e) {
-            return ResponseEntity.status(e.getStatusCode()).body(e.getReason());
+            return ResponseEntity.status(e.getStatusCode()).build();
         }
     }
 
@@ -48,9 +49,22 @@ public class LockerController {
     public ResponseEntity<Locker> getLockerById(@PathVariable Long lockerId) {
         Locker locker = lockerService.getLockerById(lockerId);
         if (locker == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
         return ResponseEntity.ok(locker);
     }
 
+    //Acest endpoint permite crearea unui nou locker.
+    @PostMapping("/new")
+    public ResponseEntity<Locker> createLocker(@RequestBody Locker locker) {
+        Locker createdLocker = lockerService.createLocker(locker);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdLocker);
+    }
+
+    //Acest endpoint returnează o listă cu toate locker-urile existente în baza de date.
+    @GetMapping
+    public ResponseEntity<List<Locker>> getAllLockers() {
+        List<Locker> allLockers = lockerService.getAllLockers();
+        return ResponseEntity.ok(allLockers);
+    }
 }
